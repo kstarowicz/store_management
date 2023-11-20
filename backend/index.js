@@ -1,8 +1,10 @@
 import express from "express";
 import dotenv from "dotenv";
 import mongoose from "mongoose";
+import cors from 'cors'; // import biblioteki CORS
 import Product from './models/Product.js'; 
-
+import User from './models/User.js'; 
+import authRoutes from './routes/auth.js';
 
 const app = express();
 dotenv.config();
@@ -21,28 +23,19 @@ mongoose.connection.on("disconnected", () => {
 });
 
 // Middlewares
+app.use(cors()); // Aktywacja middleware CORS
 app.use(express.json());
 
-// Endpointy dla produktów
-// Pobieranie produktów samych 
-//app.get('/products', async (req, res) => {
-//  try {
-//    const products = await Product.find();
-//    res.json(products);
-//  } catch (error) {
-//    res.status(500).json({ message: error.message });
-//  }
-//});
+// Dodano  uwierzytelniania
 
+app.use('/auth', authRoutes);
 
-// Endpointy dla produktów
-// Pobieranie produktów z paginacją poprawiony kod 
-
+// Endpointy dla produktów paginacja 
 
 app.get('/products', async (req, res) => {
   try {
-    const page = parseInt(req.query.page) || 1; // Ustawiamy domyślnie na 1, jeśli nie jest podany
-    const limit = parseInt(req.query.limit) || 10; // Ustawiamy domyślnie na 10, jeśli nie jest podany
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
     const skip = (page - 1) * limit;
 
     const products = await Product.find().skip(skip).limit(limit);
@@ -60,13 +53,13 @@ app.get('/products', async (req, res) => {
 });
 
 // Dodawanie nowego produktu
+
 app.post('/products', async (req, res) => {
   const product = new Product({
     name: req.body.name,
     price: req.body.price,
     description: req.body.description,
     category: req.body.category,
-    
   });
 
   try {
@@ -78,6 +71,7 @@ app.post('/products', async (req, res) => {
 });
 
 // Aktualizacja produktu
+
 app.put('/products/:id', async (req, res) => {
   try {
     const updatedProduct = await Product.findByIdAndUpdate(req.params.id, req.body, { new: true });
