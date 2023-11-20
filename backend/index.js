@@ -24,11 +24,36 @@ mongoose.connection.on("disconnected", () => {
 app.use(express.json());
 
 // Endpointy dla produktów
-// Pobieranie produktów
+// Pobieranie produktów samych 
+//app.get('/products', async (req, res) => {
+//  try {
+//    const products = await Product.find();
+//    res.json(products);
+//  } catch (error) {
+//    res.status(500).json({ message: error.message });
+//  }
+//});
+
+
+// Endpointy dla produktów
+// Pobieranie produktów z paginacją poprawiony kod 
+
+
 app.get('/products', async (req, res) => {
   try {
-    const products = await Product.find();
-    res.json(products);
+    const page = parseInt(req.query.page) || 1; // Ustawiamy domyślnie na 1, jeśli nie jest podany
+    const limit = parseInt(req.query.limit) || 10; // Ustawiamy domyślnie na 10, jeśli nie jest podany
+    const skip = (page - 1) * limit;
+
+    const products = await Product.find().skip(skip).limit(limit);
+    const totalProducts = await Product.countDocuments();
+
+    res.json({
+      totalPages: Math.ceil(totalProducts / limit),
+      currentPage: page,
+      totalProducts,
+      products
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
