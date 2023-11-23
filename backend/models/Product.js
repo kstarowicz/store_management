@@ -2,31 +2,32 @@ import mongoose from "mongoose";
 
 const ProductSchema = new mongoose.Schema(
   {
-    id: {
-      type: Number,
-      required: true,
-      unique: true
-    },
     name: {
       type: String,
       required: true,
       unique: true
     },
     category: {
-      type: String,
-      required: true,
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Category',
+      required: true
     },
     quantity: {
-      type: String,
-      required: true,
+      type: Number,
+      required: true
     },
     unit: {
       type: String,
-      required: true,
+      required: true
     },
-    prices: [{ company: String, price: Number }],
+    prices: [{
+      company: String, 
+      price: { type: Number, min: 0 }
+    }],
   },
   { timestamps: true }
 );
+
+ProductSchema.index({ name: 1 }); // Indeksowanie według nazwy
 
 export default mongoose.model("Product", ProductSchema);
