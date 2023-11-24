@@ -27,11 +27,9 @@ app.use(cors()); // Aktywacja middleware CORS
 app.use(express.json());
 
 // Dodano  uwierzytelniania
-
 app.use('/auth', authRoutes);
 
 // Endpointy dla produktów paginacja 
-
 app.get('/products', async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
@@ -53,7 +51,6 @@ app.get('/products', async (req, res) => {
 });
 
 // Dodawanie nowego produktu
-
 app.post('/products', async (req, res) => {
   const product = new Product({
     name: req.body.name,
@@ -71,7 +68,6 @@ app.post('/products', async (req, res) => {
 });
 
 // Aktualizacja produktu
-
 app.put('/products/:id', async (req, res) => {
   try {
     const updatedProduct = await Product.findByIdAndUpdate(req.params.id, req.body, { new: true });
@@ -107,3 +103,31 @@ app.listen(8800, () => {
   connect();
   console.log("Connected to backend on port 8800");
 });
+
+///-------------------------------------------------------------------///
+//JAK ŚCIĄGNĄĆ ZEWNĘTRZNĄ BAZĘ DANYCH NA ATLASA
+// import axios from "axios"
+
+// axios.get(`${process.env.FAKE_STORE_API_URL}`)
+//   .then(res => onSuccess(res.data)) // Przekazuj tylko dane z odpowiedzi
+//   .catch(err => console.log(err));
+
+// const onSuccess = (products) => {
+//   products.forEach(product => { // Użyj forEach do iteracji po tablicy
+//     assignDataValue(product); // Przekazuj cały obiekt produktu
+//   });
+// }
+
+// const assignDataValue = (product) => {
+//   let upData = new Product({
+//     id: product.id,
+//     title: product.title,
+//     price: product.price,
+//     category: product.category,
+//     description: product.description,
+//     image: product.image
+//   });
+
+//   upData.save().catch(err => console.error(err)); 
+// }
+///---------------------------------------------------------------------///
