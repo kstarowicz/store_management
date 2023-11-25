@@ -1,10 +1,10 @@
 import express from "express";
 import dotenv from "dotenv";
 import mongoose from "mongoose";
-import cors from 'cors'; // import biblioteki CORS
-import Product from './models/Product.js'; 
-import User from './models/User.js'; 
-import authRoutes from './routes/auth.js';
+import cors from "cors"; // import biblioteki CORS
+import authRoutes from "./routes/auth.js";
+import productsRoutes from "./routes/Products.js";
+import categoriesRoutes from "./routes/categories.js";
 
 const app = express();
 dotenv.config();
@@ -26,66 +26,11 @@ mongoose.connection.on("disconnected", () => {
 app.use(cors()); // Aktywacja middleware CORS
 app.use(express.json());
 
+//REST ROUTES
 // Dodano  uwierzytelniania
-app.use('/auth', authRoutes);
-
-// Endpointy dla produktów paginacja 
-app.get('/products', async (req, res) => {
-  try {
-    const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 10;
-    const skip = (page - 1) * limit;
-
-    const products = await Product.find().skip(skip).limit(limit);
-    const totalProducts = await Product.countDocuments();
-
-    res.json({
-      totalPages: Math.ceil(totalProducts / limit),
-      currentPage: page,
-      totalProducts,
-      products
-    });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-});
-
-// Dodawanie nowego produktu
-app.post('/products', async (req, res) => {
-  const product = new Product({
-    name: req.body.name,
-    price: req.body.price,
-    description: req.body.description,
-    category: req.body.category,
-  });
-
-  try {
-    const newProduct = await product.save();
-    res.status(201).json(newProduct);
-  } catch (error) {
-    res.status(400).json({ message: error.message });
-  }
-});
-
-// Aktualizacja produktu
-app.put('/products/:id', async (req, res) => {
-  try {
-    const updatedProduct = await Product.findByIdAndUpdate(req.params.id, req.body, { new: true });
-    res.json(updatedProduct);
-  } catch (error) {
-    res.status(400).json({ message: error.message });
-  }
-});
-
-// Usuwanie produktu
-app.delete('/products/:id', async (req, res) => {
-  try {
-    await Product.findByIdAndDelete(req.params.id);
-    res.json({ message: 'Product deleted' });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-});
+app.use("/auth", authRoutes);
+app.use("/products", productsRoutes);
+app.use("/categories", categoriesRoutes);
 
 // Middleware do obsługi błędów
 app.use((err, req, res, next) => {
@@ -95,7 +40,7 @@ app.use((err, req, res, next) => {
     success: false,
     status: errorStatus,
     message: errorMessage,
-    stack: err.stack
+    stack: err.stack,
   });
 });
 
@@ -127,7 +72,6 @@ app.listen(8800, () => {
 //     description: product.description,
 //     image: product.image
 //   });
-
-//   upData.save().catch(err => console.error(err)); 
+//   upData.save().catch(err => console.error(err));
 // }
 ///---------------------------------------------------------------------///
