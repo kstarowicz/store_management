@@ -4,26 +4,30 @@ const ProductSchema = new mongoose.Schema(
   {
     id: {
       type: Number,
-      require: true, index:true, unique:true,sparse:true,
-      unique: true
+      require: true,
+      index: true,
+      unique: true,
+      sparse: true,
+      unique: true,
     },
     title: {
       type: String,
-      // required: true,
-      // unique: true
+      required: true,
+      unique: true,
     },
     price: {
       type: Number,
     },
     category: {
-      type: String
+      type: String,
+      ref: "category",
     },
     description: {
       type: String,
     },
     image: {
-      type: String
-    }
+      type: String,
+    },
   },
   { timestamps: true }
 );
