@@ -1,11 +1,15 @@
-.navbar {
-    background-color: #333;
-    color: white;
-    ul {
-        list-style-type: none;
-        li {
-            display: inline;
-            margin: 0 10px;
-        }
+/*.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    // więcej stylów
+
+    .nav-item:hover {
+        // efekt hover
+    }
+
+    @media (max-width: 768px) {
+        // Styl dla menu hamburgerowego
     }
 }
+*/
